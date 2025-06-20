@@ -1,0 +1,44 @@
+                                               Energy Usage Dashboard – EDDIE Project (Step 3)
+
+     Overview
+     This project visualizes household energy usage data using an interactive D3.js based dashboard and data is 
+     provide in European CIM format (myEnergyDataMarketDocument) from three simulated households in different time zones:
+     Portugal (WET, UTC+0), Germany (CET, UTC+1) and Estonia(EET, UTC+2).
+     This dashboard allow users to upload XML files, select a household by time zone, and view visualizations of their energy usage.
+
+     Features
+     Multi-file Upload: it supports to uploading multiple XML datasets
+     Time Zone Selector:  From dropdown menu you select WET, CET, or EET
+     Line Chart: Visualizes energy consumption over time
+     You can zoom in and zoom out:  Use scroll or drag to explore specific time intervals
+
+    How to Use
+
+    Open the index_latif.html file in any browser
+    Click "Choose Files" and upload the three XML files: EE-Transformer-Output-WET.xml, EE-Transformer-Output-CET.xml and EE-Transformer-Output-EET.xml
+    Select a time zone from the dropdown and View the dynamic chart rendered below
+
+   Time Zone Handling
+   The dashboard automatically adjusts and displays timestamps according to the select region's time zone. Data is internally normalized 
+   to UTC before conversion for display.
+---------------------------------------------------------------------------------------------------------------------------------------------------
+                                            Very short description regarding index.hmtl:
+
+         the HTML file (index.html) is a simple page that links to 4 individual energy usage dashboards.
+         Each link opens a different dashboard, created by a member of group 27:
+
+        dashboard_simple.html is a basic line chart that created by Felix.
+
+        index_ali.html is time zone comparison visualization created by Ali.
+
+        index_latif.html is a zoomable line chart with bar graph created by Mohammad Latif
+
+        index_yernaz.html is bar and pie chart summary created by Yernaz
+
+        This page serves as a menu for the professor to explore all dashboards easily.
+
+  References and help
+  [D3.js Gallery](https://observablehq.com/@d3/gallery)
+  [ENTSO-E CIM Format](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A32019L0944)
+  [ISO 8601 Date Format](https://en.wikipedia.org/wiki/ISO_8601)
+  ChatGPT

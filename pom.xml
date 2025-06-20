@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>energy.eddie</groupId>
+    <artifactId>cimtranslator</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+    <!-- https://www.digitalocean.com/community/tutorials/jaxb2-maven-plugin-xjc-example-generate-java-classes-xsd -->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-xjc-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>xjc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xsdtojava</goal>
+                        </goals>
+                        <configuration>
+                            <sourceRoot>${basedir}/src/main/java</sourceRoot>
+                            <xsdOptions>
+                                <xsdOption>
+                                    <xsd>/src/main/resources/xsd/eu/iec62325-451-10-myenergydata_v1_0.xsd</xsd>
+                                    <extensionArgs>
+                                        <arg>-encoding</arg>
+                                        <arg>UTF-8</arg>
+                                        <arg>-no-header</arg>
+                                    </extensionArgs>
+                                    <deleteDirs>true</deleteDirs>
+                                    <packagename>schemas.eu</packagename>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>/src/main/resources/xsd/es/es_daily_consumption.xsd</xsd>
+                                    <extensionArgs>
+                                        <arg>-encoding</arg>
+                                        <arg>UTF-8</arg>
+                                        <arg>-no-header</arg>
+                                    </extensionArgs>
+                                    <deleteDirs>true</deleteDirs>
+                                    <packagename>schemas.region.es</packagename>
+                                </xsdOption>
+<!--                                <xsdOption>
+                                    <xsd>/src/main/resources/xsd/at/CMNotification_01p10.xsd</xsd>
+                                    <extensionArgs>
+                                        <arg>-encoding</arg>
+                                        <arg>UTF-8</arg>
+                                        <arg>-no-header</arg>
+                                    </extensionArgs>
+                                    <deleteDirs>true</deleteDirs>
+                                    <packagename>schemas.region.at.cm.notification</packagename>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>/src/main/resources/xsd/at/CMQRData.xsd</xsd>
+                                    <extensionArgs>
+                                        <arg>-encoding</arg>
+                                        <arg>UTF-8</arg>
+                                        <arg>-no-header</arg>
+                                    </extensionArgs>
+                                    <deleteDirs>true</deleteDirs>
+                                    <packagename>schemas.region.at.cm.cmqrdata</packagename>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>/src/main/resources/xsd/at/CMRequest_01p00.xsd</xsd>
+                                    <extensionArgs>
+                                        <arg>-encoding</arg>
+                                        <arg>UTF-8</arg>
+                                        <arg>-no-header</arg>
+                                    </extensionArgs>
+                                    <deleteDirs>true</deleteDirs>
+                                    <packagename>schemas.region.at.cm.request</packagename>
+                                </xsdOption>
+                                <xsdOption>
+                                    <xsd>/src/main/resources/xsd/at/CMRevoke_01p00.xsd</xsd>
+                                    <extensionArgs>
+                                        <arg>-encoding</arg>
+                                        <arg>UTF-8</arg>
+                                        <arg>-no-header</arg>
+                                    </extensionArgs>
+                                    <deleteDirs>true</deleteDirs>
+                                    <packagename>schemas.region.at.cm.revoke</packagename>
+                                </xsdOption>
+
+                                <xsdOption>
+                                    <xsd>/src/main/resources/xsd/at/ConsumptionRecord_01p30.xsd</xsd>
+                                    <extensionArgs>
+                                        <arg>-encoding</arg>
+                                        <arg>UTF-8</arg>
+                                        <arg>-no-header</arg>
+                                    </extensionArgs>
+                                    <deleteDirs>true</deleteDirs>
+                                    <packagename>schemas.region.at.consumptionrecord</packagename>
+                                </xsdOption>
+    -->
+                            </xsdOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
