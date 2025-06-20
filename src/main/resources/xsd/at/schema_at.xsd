@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="ConsumptionRecord" type="p21:ConsumptionRecordType" xmlns:p21="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21"/>
+  <xs:complexType name="SenderType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="MessageAddress"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="AddressType"/>
+  </xs:complexType>
+  <xs:complexType name="ReceiverType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="MessageAddress"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="AddressType"/>
+  </xs:complexType>
+  <xs:complexType name="RoutingHeaderType">
+    <xs:sequence>
+      <xs:element type="p21:SenderType" name="Sender" xmlns:p21="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21"/>
+      <xs:element type="p21:ReceiverType" name="Receiver" xmlns:p21="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21"/>
+      <xs:element type="xs:string" name="DocumentCreationDateTime"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MarketParticipantDirectoryType">
+    <xs:sequence>
+      <xs:element type="p21:RoutingHeaderType" name="RoutingHeader" xmlns:p21="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21"/>
+      <xs:element type="xs:string" name="Sector"/>
+      <xs:element type="xs:string" name="MessageCode"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="DocumentMode"/>
+    <xs:attribute type="xs:string" name="Duplicate"/>
+    <xs:attribute type="xs:string" name="SchemaVersion"/>
+  </xs:complexType>
+  <xs:complexType name="ConsumptionPositionType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="DateTimeFrom"/>
+      <xs:element type="xs:string" name="DateTimeTo"/>
+      <xs:element type="xs:string" name="MeteringMethod"/>
+      <xs:element type="xs:string" name="BillingUOM"/>
+      <xs:element type="xs:string" name="BillingQuantity"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ConsumptionDataType">
+    <xs:sequence>
+      <xs:element type="p21:ConsumptionPositionType" name="ConsumptionPosition" maxOccurs="unbounded" minOccurs="0" xmlns:p21="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="MeterCode"/>
+  </xs:complexType>
+  <xs:complexType name="ConsumptionType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="MeteringReason"/>
+      <xs:element type="xs:string" name="MeteringPeriodStart"/>
+      <xs:element type="xs:string" name="MeteringPeriodEnd"/>
+      <xs:element type="xs:string" name="MeteringIntervall"/>
+      <xs:element type="xs:string" name="NumberOfMeteringIntervall"/>
+      <xs:element type="p21:ConsumptionDataType" name="ConsumptionData" xmlns:p21="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ProcessDirectoryType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="MessageId"/>
+      <xs:element type="xs:string" name="ConversationId"/>
+      <xs:element type="xs:string" name="ProcessDate"/>
+      <xs:element type="xs:string" name="MeteringPoint"/>
+      <xs:element type="p21:ConsumptionType" name="Consumption" xmlns:p21="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ConsumptionRecordType">
+    <xs:sequence>
+      <xs:element type="p21:MarketParticipantDirectoryType" name="MarketParticipantDirectory" xmlns:p21="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21"/>
+      <xs:element type="p21:ProcessDirectoryType" name="ProcessDirectory" xmlns:p21="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p21"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
