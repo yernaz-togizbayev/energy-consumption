@@ -1,0 +1,1557 @@
+﻿{
+  "swagger": "2.0",
+  "info": {
+    "description": "Cette API vous permet de consulter les données quotidiennes de comptage de soutirage (consommation) et d'injection (production) d'électricité de clients équipés de compteurs communicants Linky.  \n\nL'accès à cette ressource est conditionnée par le recueil préalable du consentement du client par Enedis.\n\nLes données mesurées disponibles sont :\n* La consommation quotidienne\n* La production quotidienne\n* La puissance maximum de consommation\n* La courbe de charge de consommation\n* La courbe de charge de production\n\nLes URL d'accès à ces ressources sont :\n* https://gw.hml.api.enedis.fr pour le bac à sable\n* https://gw.prd.api.enedis.fr en environnement de production",
+    "version": "v4",
+    "title": "Données de comptage d'électricité",
+    "contact": {}
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "host": "gw.hml.api.enedis.fr",
+  "paths": {
+    "/v4/metering_data/consumption_load_curve": {
+      "get": {
+        "tags": [
+          "Metering Data"
+        ],
+        "summary": "Récupérer la puissance moyenne consommée quotidiennement, sur l'intervalle de mesure du compteur (par défaut 30 min)",
+        "description": "Cette sous ressource renvoie les valeurs correspondant à des journées de mesure de la courbe de charge de consommation d'un client pour chaque jour de la période demandée. Les valeurs retournées sont des puissances moyennes de consommation sur l'intervalle de mesure du compteur (par défaut 30 minutes). Chaque valeur est horodatée. La courbe de charge s'obtient sur des journées complètes de minuit à minuit du jour suivant en heures locales. Un appel peut porter au maximum sur 7 jours consécutifs.  Un appel peut porter sur des données datant au maximum de 24 mois et 15 jours avant la date d'appel.",
+        "parameters": [
+          {
+            "name": "usage_point_id",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Identifiant du point de livraison (PRM)",
+            "x-example": "16401220101758"
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de début de la plage demandée, au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées inclueront la date de démarrage.",
+            "x-example": "2019-05-06"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de fin de la plage demandée, au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées n'inclueront pas la date de fin et s'arrêteront la veille.",
+            "x-example": "2019-05-12"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Format de réponse acceptable",
+            "x-example": "application/json"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Token OAuth délivré à l''application cliente, de type \"Bearer\", suite au recueil du consentement du client.",
+            "x-example": "Bearer HPt7dXk6OBY4aoeyqbIvOM6"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Description de l’équipement qui a émis la requete (hardware/software)",
+            "x-example": "Mozilla/5.0 (Linux; U; Android 4.0.3; fr-fr; LG-L160L Build/IML74K)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "required": [
+                "meter_reading"
+              ],
+              "type": "object",
+              "properties": {
+                "meter_reading": {
+                  "required": [
+                    "end",
+                    "interval_reading",
+                    "quality",
+                    "start",
+                    "usage_point_id"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "usage_point_id": {
+                      "type": "string",
+                      "description": "Identifiant du point de livraison (PRM)",
+                      "example": "16401220101758"
+                    },
+                    "start": {
+                      "type": "string",
+                      "description": "Date de début de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-06"
+                    },
+                    "end": {
+                      "type": "string",
+                      "description": "Date de fin de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-12"
+                    },
+                    "quality": {
+                      "type": "string",
+                      "description": "Qualité de la donnée, brute ou corrigée",
+                      "enum": [
+                        "BRUT : Données brutes"
+                      ],
+                      "example": "BRUT"
+                    },
+                    "reading_type": {
+                      "required": [
+                        "unit"
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "measurement_kind": {
+                          "type": "string",
+                          "description": "Type de grandeur retournée, suivant le profil metering du standard international CIM. Valeurs possibles : none, energy, power, voltage.",
+                          "example": "power"
+                        },
+                        "unit": {
+                          "type": "string",
+                          "description": "Unité des données de mesure",
+                          "enum": [
+                            "W"
+                          ],
+                          "example": "W"
+                        },
+                        "aggregate": {
+                          "type": "string",
+                          "description": "Façon dont la grandeur a été mesurée, suivant le profil metering du standard international CIM. Valeurs possibles : none, average, maximum et sum.",
+                          "example": "average"
+                        }
+                      }
+                    },
+                    "interval_reading": {
+                      "type": "array",
+                      "items": {
+                        "required": [
+                          "date",
+                          "interval_length",
+                          "value"
+                        ],
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "string",
+                            "description": "Valeur du point",
+                            "example": "540"
+                          },
+                          "date": {
+                            "type": "string",
+                            "description": "Horodate de la valeur (UTC)",
+                            "example": "2019-05-06 03:00:00"
+                          },
+                          "interval_length": {
+                            "type": "string",
+                            "description": "Pas de la donnée (10, 15, 30 ou 60 minutes)",
+                            "enum": [
+                              "PT10M : Pas de 10 minutes",
+                              "PT15M : Pas de 15 minutes",
+                              "PT30M : Pas de 30 minutes",
+                              "PT60M : Pas de 60 minutes"
+                            ],
+                            "example": "PT30M"
+                          },
+                          "measure_type": {
+                            "type": "string",
+                            "description": "Qualifie le type de mesure",
+                            "enum": [
+                              "B : BRUT"
+                            ],
+                            "example": "B"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "Invalid_request"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "usage_point_id parameter is required"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "ADAM-DC-0008"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "No consent can be found for this customer and this usage point."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pas de ressource correspondant à la requête",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l'erreur retourné par le système.",
+                  "example": "no_data_found"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l'erreur correspondant au code.",
+                  "example": "no measure found for this usage point"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "L’application a dépassé son quota d’appels",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "sla_exceeded"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Number of authorized requests exceeded"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur Serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "technical_error"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Technical error. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": 503
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "Service unavailable for the moment. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v4/metering_data/production_load_curve": {
+      "get": {
+        "tags": [
+          "Metering Data"
+        ],
+        "summary": "Récupérer la puissance moyenne produite quotidiennement, sur l'intervalle de mesure du compteur (par défaut 30 min)",
+        "description": "Cette sous ressource renvoie les valeurs correspondant à des journées de mesure de la courbe de charge de production d'un client pour chaque jour de la période demandée. Les valeurs retournées sont des puissances moyennes de production sur l'intervalle de mesure du compteur (par défaut 30 minutes). Chaque valeur est horodatée. La courbe de charge s'obtient sur des journées complètes de minuit à minuit du jour suivant en heures locales. Un appel peut porter au maximum sur 7 jours consécutifs.  Un appel peut porter sur des données datant au maximum de 24 mois et 15 jours avant la date d'appel.",
+        "parameters": [
+          {
+            "name": "usage_point_id",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Identifiant du point de livraison (PRM)",
+            "x-example": "16401220101758"
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de début de la plage demandée, au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées inclueront la date de démarrage.",
+            "x-example": "2019-05-06"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de fin de la plage demandée, au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées n'inclueront pas la date de fin et s'arrêteront la veille.",
+            "x-example": "2019-05-12"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Format de réponse acceptable",
+            "x-example": "application/json"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Token OAuth délivré à l''application cliente, de type \"Bearer\", suite au recueil du consentement du client.",
+            "x-example": "Bearer HPt7dXk6OBY4aoeyqbIvOM6"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Description de l’équipement qui a émis la requete (hardware/software)",
+            "x-example": "Mozilla/5.0 (Linux; U; Android 4.0.3; fr-fr; LG-L160L Build/IML74K)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "required": [
+                "meter_reading"
+              ],
+              "type": "object",
+              "properties": {
+                "meter_reading": {
+                  "required": [
+                    "end",
+                    "interval_reading",
+                    "quality",
+                    "start",
+                    "usage_point_id"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "usage_point_id": {
+                      "type": "string",
+                      "description": "Identifiant du point de livraison (PRM)",
+                      "example": "16401220101758"
+                    },
+                    "start": {
+                      "type": "string",
+                      "description": "Date de début de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-06"
+                    },
+                    "end": {
+                      "type": "string",
+                      "description": "Date de fin de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-12"
+                    },
+                    "quality": {
+                      "type": "string",
+                      "description": "Qualité de la donnée, brute ou corrigée",
+                      "enum": [
+                        "BRUT : Données brutes"
+                      ],
+                      "example": "BRUT"
+                    },
+                    "reading_type": {
+                      "required": [
+                        "unit"
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "measurement_kind": {
+                          "type": "string",
+                          "description": "Type de grandeur retournée, suivant le profil metering du standard international CIM. Valeurs possibles : none, energy, power, voltage.",
+                          "example": "power"
+                        },
+                        "unit": {
+                          "type": "string",
+                          "description": "Unité des données de mesure",
+                          "enum": [
+                            "W"
+                          ],
+                          "example": "W"
+                        },
+                        "aggregate": {
+                          "type": "string",
+                          "description": "Façon dont la grandeur a été mesurée, suivant le profil metering du standard international CIM. Valeurs possibles : none, average, maximum et sum.",
+                          "example": "average"
+                        }
+                      }
+                    },
+                    "interval_reading": {
+                      "type": "array",
+                      "items": {
+                        "required": [
+                          "date",
+                          "interval_length",
+                          "value"
+                        ],
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "string",
+                            "description": "Valeur du point",
+                            "example": "540"
+                          },
+                          "date": {
+                            "type": "string",
+                            "description": "Horodate de la valeur (UTC)",
+                            "example": "2019-05-06 03:00:00"
+                          },
+                          "interval_length": {
+                            "type": "string",
+                            "description": "Pas de la donnée",
+                            "enum": [
+                              "PT5M : Pas de 5 minutes",
+                              "PT10M : Pas de 10 minutes",
+                              "PT15M : Pas de 15 minutes",
+                              "PT30M : Pas de 30 minutes",
+                              "PT60M : Pas de 60 minutes"
+                            ],
+                            "example": "PT30M"
+                          },
+                          "measure_type": {
+                            "type": "string",
+                            "description": "Qualifie le type de mesure",
+                            "enum": [
+                              "B : BRUT"
+                            ],
+                            "example": "B"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "Invalid_request"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "usage_point_id parameter is required"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "ADAM-DC-0008"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "No consent can be found for this customer and this usage point."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pas de ressource correspondant à la requête",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l'erreur retourné par le système.",
+                  "example": "no_data_found"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l'erreur correspondant au code.",
+                  "example": "no measure found for this usage point"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "L’application a dépassé son quota d’appels",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "sla_exceeded"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Number of authorized requests exceeded"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur Serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "technical_error"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Technical error. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": 503
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "Service unavailable for the moment. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v4/metering_data/daily_consumption_max_power": {
+      "get": {
+        "tags": [
+          "Metering Data"
+        ],
+        "summary": "Récupérer la puissance maximale de consommation atteinte quotidiennement",
+        "description": "Cette sous ressource renvoie les valeurs correspondant à des puissances maximales de consommation (en W) atteintes quotidiennement pour chaque jour de la période demandée. Chaque valeur est datée. La courbe de charge s'obtient sur des journées complètes de minuit à minuit du jour suivant en heures locales.  Un appel peut porter sur des données datant au maximum de 36 mois et 15 jours avant la date d'appel.",
+        "parameters": [
+          {
+            "name": "usage_point_id",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Identifiant du point de livraison (PRM)",
+            "x-example": "16401220101758"
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de début de la plage demandée au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées inclueront la date de démarrage.",
+            "x-example": "2019-05-06"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de fin de la plage demandée au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées n'inclueront pas la date de fin et s'arrêteront la veille.",
+            "x-example": "2019-05-12"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Format de réponse acceptable",
+            "x-example": "application/json"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Token OAuth délivré à l''application cliente, de type \"Bearer\", suite au recueil du consentement du client.",
+            "x-example": "Bearer HPt7dXk6OBY4aoeyqbIvOM6"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Description de l’équipement qui a émis la requete (hardware/software)",
+            "x-example": "Mozilla/5.0 (Linux; U; Android 4.0.3; fr-fr; LG-L160L Build/IML74K)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "required": [
+                "meter_reading"
+              ],
+              "type": "object",
+              "properties": {
+                "meter_reading": {
+                  "required": [
+                    "end",
+                    "interval_reading",
+                    "quality",
+                    "reading_type",
+                    "start",
+                    "usage_point_id"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "usage_point_id": {
+                      "type": "string",
+                      "description": "Identifiant du point de livraison (PRM)",
+                      "example": "16401220101758"
+                    },
+                    "start": {
+                      "type": "string",
+                      "description": "Date de début de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-06"
+                    },
+                    "end": {
+                      "type": "string",
+                      "description": "Date de fin de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-12"
+                    },
+                    "quality": {
+                      "type": "string",
+                      "description": "Qualité de la donnée, brute ou corrigée",
+                      "enum": [
+                        "BRUT : Données brutes"
+                      ],
+                      "example": "BRUT"
+                    },
+                    "reading_type": {
+                      "required": [
+                        "aggregate",
+                        "measurement_kind",
+                        "measuring_period",
+                        "unit"
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "measurement_kind": {
+                          "type": "string",
+                          "description": "Type de grandeur retournée, suivant le profil metering du standard international CIM. Valeurs possibles : none, energy, power, voltage.",
+                          "example": "power"
+                        },
+                        "measuring_period": {
+                          "type": "string",
+                          "description": "Pas d’agrégation de la donnée",
+                          "example": "P1D"
+                        },
+                        "unit": {
+                          "type": "string",
+                          "description": "Unité des données de mesure",
+                          "enum": [
+                            "VA"
+                          ],
+                          "example": "VA"
+                        },
+                        "aggregate": {
+                          "type": "string",
+                          "description": "Façon dont la grandeur a été mesurée, suivant le profil metering du standard international CIM. Valeurs possibles : none, average, maximum et sum. ",
+                          "example": "maximum"
+                        }
+                      }
+                    },
+                    "interval_reading": {
+                      "type": "array",
+                      "items": {
+                        "required": [
+                          "date",
+                          "value"
+                        ],
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "string",
+                            "description": "Valeur du point",
+                            "example": "540"
+                          },
+                          "date": {
+                            "type": "string",
+                            "description": "Horodate de la valeur (UTC)",
+                            "example": "2019-05-06 03:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "Invalid_request"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "usage_point_id parameter is required"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "ADAM-DC-0008"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "No consent can be found for this customer and this usage point."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pas de ressource correspondant à la requête",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l'erreur retourné par le système.",
+                  "example": "no_data_found"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l'erreur correspondant au code.",
+                  "example": "no measure found for this usage point"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "L’application a dépassé son quota d’appels",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "sla_exceeded"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Number of authorized requests exceeded"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur Serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "technical_error"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Technical error. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": 503
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "Service unavailable for the moment. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v4/metering_data/daily_consumption": {
+      "get": {
+        "tags": [
+          "Metering Data"
+        ],
+        "summary": "Récupérer la consommation quotidienne",
+        "description": "Cette sous ressource renvoie les valeurs correspondant à la consommation quotidienne (en Wh) sur chaque jour de la période demandée. Chaque valeur est daté.  Un appel peut porter sur des données datant au maximum de 36 mois et 15 jours avant la date d'appel.",
+        "parameters": [
+          {
+            "name": "usage_point_id",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Identifiant du point de livraison (PRM)",
+            "x-example": "16401220101758"
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de début de la plage demandée au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées inclueront la date de démarrage.",
+            "x-example": "2019-05-06"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de fin de la plage demandée au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées n'inclueront pas la date de fin et s'arrêteront la veille.",
+            "x-example": "2019-05-12"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Format de réponse acceptable",
+            "x-example": "application/json"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Token OAuth délivré à l''application cliente, de type \"Bearer\", suite au recueil du consentement du client.",
+            "x-example": "Bearer HPt7dXk6OBY4aoeyqbIvOM6"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Description de l’équipement qui a émis la requete (hardware/software)",
+            "x-example": "Mozilla/5.0 (Linux; U; Android 4.0.3; fr-fr; LG-L160L Build/IML74K)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "required": [
+                "meter_reading"
+              ],
+              "type": "object",
+              "properties": {
+                "meter_reading": {
+                  "required": [
+                    "end",
+                    "interval_reading",
+                    "quality",
+                    "reading_type",
+                    "start",
+                    "usage_point_id"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "usage_point_id": {
+                      "type": "string",
+                      "description": "Identifiant du point de livraison (PRM)",
+                      "example": "16401220101758"
+                    },
+                    "start": {
+                      "type": "string",
+                      "description": "Jour de début de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-06"
+                    },
+                    "end": {
+                      "type": "string",
+                      "description": "Jour de fin de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-12"
+                    },
+                    "quality": {
+                      "type": "string",
+                      "description": "Qualité de la donnée, brute ou corrigée",
+                      "enum": [
+                        "BRUT : Données brutes"
+                      ],
+                      "example": "BRUT"
+                    },
+                    "reading_type": {
+                      "required": [
+                        "aggregate",
+                        "measurement_kind",
+                        "measuring_period",
+                        "unit"
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "measurement_kind": {
+                          "type": "string",
+                          "description": "Type de grandeur retournée, suivant le profil metering du standard international CIM. Valeurs possibles : none, energy, power, voltage. ",
+                          "example": "energy"
+                        },
+                        "measuring_period": {
+                          "type": "string",
+                          "description": "Pas d'agrégation de la donnée",
+                          "enum": [
+                            "P1D"
+                          ],
+                          "example": "P1D"
+                        },
+                        "unit": {
+                          "type": "string",
+                          "description": "Unité des données de mesure",
+                          "enum": [
+                            "Wh"
+                          ],
+                          "example": "Wh"
+                        },
+                        "aggregate": {
+                          "type": "string",
+                          "description": "Façon dont la grandeur a été mesurée, suivant le profil metering du standard international CIM. Valeurs possibles : none, average, maximum et sum. Pour cette grandeur : sum",
+                          "example": "sum"
+                        }
+                      }
+                    },
+                    "interval_reading": {
+                      "type": "array",
+                      "items": {
+                        "required": [
+                          "date",
+                          "value"
+                        ],
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "string",
+                            "description": "Valeur du point",
+                            "example": "540"
+                          },
+                          "date": {
+                            "type": "string",
+                            "description": "Date de la valeur (UTC)",
+                            "example": "2019-05-06"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "Invalid_request"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "usage_point_id parameter is required"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "ADAM-DC-0008"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "No consent can be found for this customer and this usage point."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pas de ressource correspondant à la requête",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l'erreur retourné par le système.",
+                  "example": "no_data_found"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l'erreur correspondant au code.",
+                  "example": "no measure found for this usage point"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "L’application a dépassé son quota d’appels",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "sla_exceeded"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Number of authorized requests exceeded"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur Serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "technical_error"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Technical error. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": 503
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "Service unavailable for the moment. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v4/metering_data/daily_production": {
+      "get": {
+        "tags": [
+          "Metering Data"
+        ],
+        "summary": "Récupérer la production quotidienne",
+        "description": "Cette sous ressource renvoie les valeurs correspondant à la production quotidienne (en Wh) sur chaque jour de la période demandée. Chaque valeur est daté.  Un appel peut porter sur des données datant au maximum de 36 mois et 15 jours avant la date d'appel.",
+        "parameters": [
+          {
+            "name": "usage_point_id",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Identifiant du point de livraison (PRM)",
+            "x-example": "16401220101758"
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de début de la plage demandée au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées inclueront la date de démarrage.",
+            "x-example": "2019-05-06"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Jour de fin de la plage demandée au format full-date de la RFC 3339, à savoir YYYY-MM-DD. Les données retournées n'inclueront pas la date de fin et s'arrêteront la veille.",
+            "x-example": "2019-05-12"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Format de réponse acceptable",
+            "x-example": "application/json"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Token OAuth délivré à l''application cliente, de type \"Bearer\", suite au recueil du consentement du client.",
+            "x-example": "Bearer HPt7dXk6OBY4aoeyqbIvOM6"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "required": false,
+            "type": "string",
+            "description": "Description de l’équipement qui a émis la requete (hardware/software)",
+            "x-example": "Mozilla/5.0 (Linux; U; Android 4.0.3; fr-fr; LG-L160L Build/IML74K)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "required": [
+                "meter_reading"
+              ],
+              "type": "object",
+              "properties": {
+                "meter_reading": {
+                  "required": [
+                    "end",
+                    "interval_reading",
+                    "quality",
+                    "reading_type",
+                    "start",
+                    "usage_point_id"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "usage_point_id": {
+                      "type": "string",
+                      "description": "Identifiant du point de livraison (PRM)",
+                      "example": "16401220101758"
+                    },
+                    "start": {
+                      "type": "string",
+                      "description": "Jour de début de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-06"
+                    },
+                    "end": {
+                      "type": "string",
+                      "description": "Jour de fin de la plage renvoyée<br/>\nFormat YYYY-MM-DD",
+                      "example": "2019-05-12"
+                    },
+                    "quality": {
+                      "type": "string",
+                      "description": "Qualité de la donnée, brute ou corrigée",
+                      "enum": [
+                        "BRUT : Données brutes"
+                      ],
+                      "example": "BRUT"
+                    },
+                    "reading_type": {
+                      "required": [
+                        "aggregate",
+                        "measurement_kind",
+                        "measuring_period",
+                        "unit"
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "measurement_kind": {
+                          "type": "string",
+                          "description": "Type de grandeur retournée, suivant le profil metering du standard international CIM. Valeurs possibles : none, energy, power, voltage. ",
+                          "example": "energy"
+                        },
+                        "measuring_period": {
+                          "type": "string",
+                          "description": "Pas d'agrégation de la donnée",
+                          "enum": [
+                            "P1D"
+                          ],
+                          "example": "P1D"
+                        },
+                        "unit": {
+                          "type": "string",
+                          "description": "Unité des données de mesure",
+                          "enum": [
+                            "Wh"
+                          ],
+                          "example": "Wh"
+                        },
+                        "aggregate": {
+                          "type": "string",
+                          "description": "Façon dont la grandeur a été mesurée, suivant le profil metering du standard international CIM. Valeurs possibles : none, average, maximum et sum. Pour cette grandeur : sum",
+                          "example": "sum"
+                        }
+                      }
+                    },
+                    "interval_reading": {
+                      "type": "array",
+                      "items": {
+                        "required": [
+                          "date",
+                          "value"
+                        ],
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "string",
+                            "description": "Valeur du point",
+                            "example": "540"
+                          },
+                          "date": {
+                            "type": "string",
+                            "description": "Date de la valeur (UTC)",
+                            "example": "2019-05-06"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "Invalid_request"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "usage_point_id parameter is required"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "ADAM-DC-0008"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "No consent can be found for this customer and this usage point."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pas de ressource correspondant à la requête",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l'erreur retourné par le système.",
+                  "example": "no_data_found"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l'erreur correspondant au code.",
+                  "example": "no measure found for this usage point"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "L’application a dépassé son quota d’appels",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "sla_exceeded"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Number of authorized requests exceeded"
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur Serveur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": "technical_error"
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code.",
+                  "example": "Technical error. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "uri de la documentation API",
+                  "example": ""
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Code de l’erreur retourné par le système.",
+                  "example": 503
+                },
+                "error_description": {
+                  "type": "string",
+                  "description": "Description de l’erreur correspondant au code",
+                  "example": "Service unavailable for the moment. Please try later."
+                },
+                "error_uri": {
+                  "type": "string",
+                  "description": "Lien vers les descriptions des erreurs",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

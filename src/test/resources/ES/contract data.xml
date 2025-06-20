@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<datoscontractuales>
+    <datoscontractuales>
+        <CUPS>ES0022000006150671YK1P</CUPS>
+        <distribuidora>UFD</distribuidora>
+        <comercializadora>COMERCIALIZADORA REGULADA, GAS &amp; POWER, S.A.</comercializadora>
+        <tarifaAcceso>2.0TD PEAJE ATR</tarifaAcceso>
+        <tensionConexion>Baja 220</tensionConexion>
+        <potenciaContratadakW>5,5</potenciaContratadakW>
+        <modoControlPotencia/>
+        <discriminacionHoraria/>
+        <fechaInicioVigencia>1976/09/30</fechaInicioVigencia>
+        <fechafinVigencia/>
+        <provincia>MADRID</provincia>
+        <municipio>MADRID-MADRID</municipio>
+        <codigoPostal>28033</codigoPostal>
+    </datoscontractuales>
+</datoscontractuales>

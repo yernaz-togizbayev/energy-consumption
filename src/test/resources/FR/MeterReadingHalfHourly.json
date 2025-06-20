@@ -1,0 +1,21 @@
+{
+  "meter_reading": {
+    "usage_point_id": "16401220101758",
+    "start": "2019-05-06",
+    "end": "2019-05-12",
+    "quality": "BRUT",
+    "reading_type": {
+      "measurement_kind": "power",
+      "unit": "W",
+      "aggregate": "average"
+    },
+    "interval_reading": [
+      {
+        "value": "540",
+        "date": "2019-05-06T03:00:00+02:00",
+        "interval_length": "PT30M",
+        "measure_type": "B"
+      }
+    ]
+  }
+}

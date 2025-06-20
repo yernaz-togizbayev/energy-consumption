@@ -1,0 +1,30 @@
+<cp:CMRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:cp="http://www.ebutilities.at/schemata/customerconsent/cmrequest/01p00"
+xmlns:ct="http://www.ebutilities.at/schemata/customerprocesses/common/types/01p20"
+xsi:schemaLocation="http://www.ebutilities.at/schemata/customerconsent/cmrequest/01p00 
+http://www.ebutilities.at/schemata/customerprocesses/CM_REQ_ONL/01.01/ANFORDERUNG_CCMO">
+  <cp:MarketParticipantDirectory DocumentMode="SIMU" Duplicate="true" SchemaVersion="01.00">
+    <ct:RoutingHeader>
+      <ct:Sender AddressType="ECNumber">
+        <ct:MessageAddress>EP1000023</ct:MessageAddress> <!-- my eligible party AT-code -->
+      </ct:Sender>
+      <ct:Receiver AddressType="ECNumber">
+        <ct:MessageAddress>AT009000</ct:MessageAddress> <!-- AT-Code of Netze Burgenland -->
+      </ct:Receiver>
+      <ct:DocumentCreationDateTime>2022-01-18T10:52:47Z</ct:DocumentCreationDateTime>
+    </ct:RoutingHeader>
+    <ct:Sector>01</ct:Sector>
+    <cp:MessageCode>ANFORDERUNG_CCMO</cp:MessageCode>
+  </cp:MarketParticipantDirectory>
+  <cp:ProcessDirectory>
+    <ct:MessageId>GC200007202201188930001230001234579</ct:MessageId> <!-- see schema docs above for an algorithm -->
+    <ct:ConversationId>GC200007202201189930001230012345689</ct:ConversationId> <!-- see schema docs above for an algorithm -->
+    <cp:ProcessDate>2022-01-18</cp:ProcessDate> <!-- today's date -->
+    <cp:CMRequestId>1WRN78Z7</cp:CMRequestId> <!-- see schema docs above for an algorithm, will be used by customer to find req -->
+    <cp:CMRequest>
+      <cp:ReqDatType>HistoricalMeteringData</cp:ReqDatType>
+      <cp:DateFrom>2021-06-13</cp:DateFrom>
+      <cp:DateTo>2021-08-30</cp:DateTo>
+    </cp:CMRequest>
+  </cp:ProcessDirectory>
+</cp:CMRequest>

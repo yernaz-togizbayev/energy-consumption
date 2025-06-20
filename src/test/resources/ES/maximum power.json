@@ -1,0 +1,74 @@
+[
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2020/09/16",
+        "Hora": "13:15",
+        "maximoPotenciaDemandadaKW": "4,548"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2020/10/23",
+        "Hora": "12:30",
+        "maximoPotenciaDemandadaKW": "6,020"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2020/11/13",
+        "Hora": "12:30",
+        "maximoPotenciaDemandadaKW": "5,920"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2020/12/24",
+        "Hora": "10:45",
+        "maximoPotenciaDemandadaKW": "6,132"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/01/30",
+        "Hora": "12:00",
+        "maximoPotenciaDemandadaKW": "5,840"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/02/12",
+        "Hora": "12:15",
+        "maximoPotenciaDemandadaKW": "5,292"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/03/09",
+        "Hora": "13:00",
+        "maximoPotenciaDemandadaKW": "6,208"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/04/30",
+        "Hora": "12:45",
+        "maximoPotenciaDemandadaKW": "6,688"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/05/05",
+        "Hora": "13:00",
+        "maximoPotenciaDemandadaKW": "6,304"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/06/09",
+        "Hora": "12:15",
+        "maximoPotenciaDemandadaKW": "5,468"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/07/24",
+        "Hora": "15:15",
+        "maximoPotenciaDemandadaKW": "4,024"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/08/30",
+        "Hora": "16:15",
+        "maximoPotenciaDemandadaKW": "3,744"
+    }
+]
