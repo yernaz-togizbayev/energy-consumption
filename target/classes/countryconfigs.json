@@ -1,0 +1,21 @@
+{
+  "countries": [
+    {
+      "country_code": "AT",
+      "country_name": "Austria",
+      "approach": "PUSH"
+    },
+    {
+      "country_code": "ES",
+      "country_name": "Spain",
+      "approach": "PULL",
+      "pull_time": "03:00"
+    },
+    {
+      "country_code": "FR",
+      "country_name": "France",
+      "approach": "PULL",
+      "pull_time": "03:00"
+    }
+  ]
+}

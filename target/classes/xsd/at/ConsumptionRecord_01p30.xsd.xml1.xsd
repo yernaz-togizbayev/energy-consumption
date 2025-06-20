@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p30" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="ConsumptionRecord" type="p30:ConsumptionRecordType" xmlns:p30="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p30"/>
+  <xs:complexType name="MarketParticipantDirectoryType">
+    <xs:sequence>
+      <xs:element ref="p20:RoutingHeader" xmlns:p20="http://www.ebutilities.at/schemata/customerprocesses/common/types/01p20"/>
+      <xs:element ref="p20:Sector" xmlns:p20="http://www.ebutilities.at/schemata/customerprocesses/common/types/01p20"/>
+      <xs:element type="xs:string" name="MessageCode"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="DocumentMode"/>
+    <xs:attribute type="xs:string" name="Duplicate"/>
+    <xs:attribute type="xs:string" name="SchemaVersion"/>
+  </xs:complexType>
+  <xs:complexType name="EPType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="DTF"/>
+      <xs:element type="xs:string" name="DTT">
+        <xs:annotation>
+          <xs:documentation>Optional:</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="MM">
+        <xs:annotation>
+          <xs:documentation>Optional:</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="BQ"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="EnergyDataType">
+    <xs:sequence>
+      <xs:element type="p30:EPType" name="EP" xmlns:p30="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p30">
+        <xs:annotation>
+          <xs:documentation>1 or more repetitions:</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="MeterCode"/>
+    <xs:attribute type="xs:string" name="UOM"/>
+  </xs:complexType>
+  <xs:complexType name="EnergyType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="MeteringReason"/>
+      <xs:element type="xs:string" name="MeteringPeriodStart"/>
+      <xs:element type="xs:string" name="MeteringPeriodEnd"/>
+      <xs:element type="xs:string" name="MeteringIntervall"/>
+      <xs:element type="xs:string" name="NumberOfMeteringIntervall"/>
+      <xs:element type="p30:EnergyDataType" name="EnergyData" xmlns:p30="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p30">
+        <xs:annotation>
+          <xs:documentation>1 to 1000 repetitions:</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ProcessDirectoryType">
+    <xs:sequence>
+      <xs:element ref="p20:MessageId" xmlns:p20="http://www.ebutilities.at/schemata/customerprocesses/common/types/01p20"/>
+      <xs:element ref="p20:ConversationId" xmlns:p20="http://www.ebutilities.at/schemata/customerprocesses/common/types/01p20"/>
+      <xs:element ref="p20:ProcessDate" xmlns:p20="http://www.ebutilities.at/schemata/customerprocesses/common/types/01p20"/>
+      <xs:element ref="p20:MeteringPoint" xmlns:p20="http://www.ebutilities.at/schemata/customerprocesses/common/types/01p20"/>
+      <xs:element type="xs:string" name="DeliveryPoint">
+        <xs:annotation>
+          <xs:documentation>Optional:</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="p30:EnergyType" name="Energy" xmlns:p30="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p30">
+        <xs:annotation>
+          <xs:documentation>1 to 1000 repetitions:</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ConsumptionRecordType">
+    <xs:sequence>
+      <xs:element type="p30:MarketParticipantDirectoryType" name="MarketParticipantDirectory" xmlns:p30="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p30"/>
+      <xs:element type="p30:ProcessDirectoryType" name="ProcessDirectory" xmlns:p30="http://www.ebutilities.at/schemata/customerprocesses/consumptionrecord/01p30"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

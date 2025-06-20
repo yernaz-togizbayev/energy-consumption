@@ -1,0 +1,14 @@
+<consumos>
+  <!--Optional:-->
+  <CUPS>string</CUPS>
+  <!--Optional:-->
+  <Fecha>string</Fecha>
+  <!--Optional:-->
+  <Hora>string</Hora>
+  <!--Optional:-->
+  <Consumo_kWh>string</Consumo_kWh>
+  <!--Optional:-->
+  <metodo_obtencion>string</metodo_obtencion>
+  <!--Zero or more repetitions:-->
+  <consumos/>
+</consumos>

@@ -1,0 +1,82 @@
+<urn:MyEnergyData_MarketDocument xmlns:urn="urn:entsoe.eu:wgedi:MyEnergyData:10:1">
+  <urn:mRID>string</urn:mRID>
+  <!--Optional:-->
+  <urn:revisionNumber>string</urn:revisionNumber>
+  <!--Optional:-->
+  <urn:type>A01</urn:type>
+  <!--Optional:-->
+  <urn:docStatus>
+    <urn:value>A52</urn:value>
+  </urn:docStatus>
+  <!--Optional:-->
+  <urn:createdDateTime>2004-02-14T19:44:14</urn:createdDateTime>
+  <!--Optional:-->
+  <urn:sender_MarketParticipant.name>string</urn:sender_MarketParticipant.name>
+  <!--Optional:-->
+  <urn:sender_MarketParticipant.marketRole.type>A01</urn:sender_MarketParticipant.marketRole.type>
+  <!--Optional:-->
+  <urn:sender_MarketParticipant.mRID codingScheme="A01">string</urn:sender_MarketParticipant.mRID>
+  <!--Optional:-->
+  <urn:receiver_MarketParticipant.name>string</urn:receiver_MarketParticipant.name>
+  <!--Optional:-->
+  <urn:receiver_MarketParticipant.marketRole.type>A42</urn:receiver_MarketParticipant.marketRole.type>
+  <!--Optional:-->
+  <urn:receiver_MarketParticipant.mRID codingScheme="NNL">string</urn:receiver_MarketParticipant.mRID>
+  <!--Optional:-->
+  <urn:period.timeInterval>
+    <urn:start>string</urn:start>
+    <urn:end>string</urn:end>
+  </urn:period.timeInterval>
+  <!--Optional:-->
+  <urn:mD_Area_Domain.mRID codingScheme="A01">string</urn:mD_Area_Domain.mRID>
+  <!--Zero or more repetitions:-->
+  <urn:TimeSeries>
+    <urn:mRID>string</urn:mRID>
+    <!--Optional:-->
+    <urn:businessType>A01</urn:businessType>
+    <!--Optional:-->
+    <urn:product>8716867000030</urn:product>
+    <!--Optional:-->
+    <urn:name>string</urn:name>
+    <!--Optional:-->
+    <urn:curveType>A01</urn:curveType>
+    <!--Optional:-->
+    <urn:tS_Area_Domain.mRID codingScheme="NHU">string</urn:tS_Area_Domain.mRID>
+    <!--Optional:-->
+    <urn:marketAgreement.mRID>string</urn:marketAgreement.mRID>
+    <!--Optional:-->
+    <urn:marketAgreement.type>A06</urn:marketAgreement.type>
+    <!--Optional:-->
+    <urn:measurement_Unit.name>A59</urn:measurement_Unit.name>
+    <!--Zero or more repetitions:-->
+    <urn:MarketEvaluationPoint>
+      <urn:mRID codingScheme="A01">string</urn:mRID>
+      <!--Optional:-->
+      <urn:connectionCategory>string</urn:connectionCategory>
+      <!--Optional:-->
+      <urn:usagePointLocation.geoInfoReference>string</urn:usagePointLocation.geoInfoReference>
+    </urn:MarketEvaluationPoint>
+    <!--Optional:-->
+    <urn:original_MarketDocument.mRID>string</urn:original_MarketDocument.mRID>
+    <!--Zero or more repetitions:-->
+    <urn:Period>
+      <urn:resolution>P8DT14H20M54S</urn:resolution>
+      <urn:timeInterval>
+        <urn:start>string</urn:start>
+        <urn:end>string</urn:end>
+      </urn:timeInterval>
+      <!--1 or more repetitions:-->
+      <urn:Point>
+        <urn:position>100</urn:position>
+        <!--Optional:-->
+        <urn:in_Quantity.quantity>1000.00</urn:in_Quantity.quantity>
+        <!--Optional:-->
+        <urn:in_Quantity.quality>A04</urn:in_Quantity.quality>
+        <!--Optional:-->
+        <urn:out_Quantity.quantity>1000.00</urn:out_Quantity.quantity>
+        <!--Optional:-->
+        <urn:out_Quantity.quality>A01</urn:out_Quantity.quality>
+      </urn:Point>
+    </urn:Period>
+  </urn:TimeSeries>
+</urn:MyEnergyData_MarketDocument>
