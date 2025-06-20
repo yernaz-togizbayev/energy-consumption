@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Energy Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: baseline;
+            align-items: center;
+            background-color: #f2f2f2;
+            min-height: 95vh;
+        }
+
+        input {
+            margin-bottom: 20px;
+        }
+        
+        .dashboard {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: start;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Energy Consumption Data</h2>
+    <input type="file" id="fileInput" accept=".xml" multiple>
+    <p id="message" style="color: #555; font-weight: bold;">
+        Upload at least 2 XML files for comparison.
+    </p>
+    <div class="dashboard">
+        <div class="chart-box" id="barChart"></div>
+        <div class="chart-box" id="pieChart"></div>
+    </div>
+
+    <script type="module">
+        import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+        const fileInput = document.getElementById("fileInput");
+        const barChartDiv = d3.select("#barChart");
+        const pieChartDiv = d3.select("#pieChart");
+        const msg = document.getElementById("message");
+
+        fileInput.addEventListener("change", function (event) {
+            const files = Array.from(event.target.files);
+            
+            if (files.length < 2) {
+                msg.textContent = "Please upload at least 2 XML files.";
+                msg.style.color = "red";
+                return;
+            }
+            
+            msg.textContent = "";
+            
+            Promise.all(files.map(file => new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(e.target.result, "application/xml");
+                    const periods = Array.from(xmlDoc.getElementsByTagName("Period"));
+                    const data = periods.map(p => {
+                        const time = p.getElementsByTagName("start")[0]?.textContent;
+                        const quantity = parseFloat(p.getElementsByTagName("out_Quantity.quantity")[0]?.textContent);
+                        return { time: new Date(time), quantity };
+                    }).filter(d => !isNaN(d.quantity));
+                    resolve({ label: file.name.split("-")[3]?.replace(".xml", "") ?? file.name, data });
+                };
+                reader.readAsText(file);
+            }))).then(datasets => {
+                drawBarChart(datasets);
+                drawPieChart(datasets.flatMap(d => d.data));
+            });
+        });
+
+        function drawBarChart(datasets) {
+            barChartDiv.html("");
+
+            const margin = { top: 30, right: 80, bottom: 50, left: 60 };
+            const width = 800 - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
+
+            const svg = barChartDiv.append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            const hourLabels = Array.from({ length: 24 }, (_, i) => i);
+
+            const avgByHour = datasets.map(dataset => {
+                const hourly = d3.rollup(dataset.data, v => d3.mean(v, d => d.quantity), d => d.time.getHours());
+                return {
+                    label: dataset.label,
+                    values: hourLabels.map(h => ({ hour: h, quantity: hourly.get(h) || 0 }))
+                };
+            });
+
+            const x0 = d3.scaleBand().domain(hourLabels).range([0, width]).paddingInner(0.4);
+            const x1 = d3.scaleBand().domain(avgByHour.map(d => d.label)).range([0, x0.bandwidth()]).padding(0.05);
+            const y = d3.scaleLinear().domain([0, d3.max(avgByHour.flatMap(d => d.values), d => d.quantity)]).nice().range([height, 0]);
+            const color = d3.scaleOrdinal().domain(avgByHour.map(d => d.label)).range(d3.schemeCategory10);
+          
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x0).tickFormat(d => `${d}:00`))
+                .selectAll("text").attr("transform", "rotate(-45)").style("text-anchor", "end");
+
+            svg.append("g").call(d3.axisLeft(y));
+          
+            const legend = svg.append("g")
+                .attr("class", "legend-box")
+                .attr("transform", "translate(0,0)");
+
+            const timezones = {
+                "CET": "Central European Time (CET)",
+                "EET": "Eastern European Time (EET)",
+                "WET": "Western European Time (WET)"
+            };
+            
+            const legendData = avgByHour.map(d => ({
+              label: timezones[d.label] || d.label,
+              color: color(d.label)
+            }));
+
+            legend.selectAll("legend-items")
+                .data(legendData)
+                .enter()
+                .append("g")
+                .attr("transform", (d, i) => `translate(10, ${10 + i * 20})`)
+                .each(function (d, i) {
+                    d3.select(this)
+                        .append("rect")
+                        .attr("x", 50)
+                        .attr("y", -8)
+                        .attr("width", 12)
+                        .attr("height", 12)
+                        .attr("fill", d.color);
+
+                    d3.select(this)
+                        .append("text")
+                        .attr("x", 70)
+                        .attr("y", 0)
+                        .text(d.label)
+                        .attr("alignment-baseline", "middle")
+                        .style("font-size", "12px");
+                });
+
+            svg.selectAll("g.layer")
+                .data(avgByHour)
+                .join("g")
+                .attr("fill", d => color(d.label))
+                .selectAll("rect")
+                .data(d => d.values.map(v => ({ label: d.label, ...v })))
+                .join("rect")
+                .attr("x", d => x0(d.hour) + x1(d.label))
+                .attr("y", d => y(d.quantity))
+                .attr("width", x1.bandwidth())
+                .attr("height", d => height - y(d.quantity));
+            
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", height + 45)
+                .style("text-anchor", "middle")
+                .style("font-size", "16px")
+                .text("Hour of Day");
+                  
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -height / 2)
+                .attr("y", -45)
+                .style("text-anchor", "middle")
+                .style("font-size", "16px")
+                .text("Average Energy (kWh)");
+
+
+        }
+
+        function drawPieChart(data) {
+            pieChartDiv.html("");
+
+            const summary = {
+                low: data.filter(d => d.quantity < 0.03).length,
+                medium: data.filter(d => d.quantity >= 0.03 && d.quantity < 0.06).length,
+                high: data.filter(d => d.quantity >= 0.06).length
+            };
+
+            const pieData = [
+                { label: "Low (<0.03 kWh)", value: summary.low },
+                { label: "Medium (0.03–0.06 kWh)", value: summary.medium },
+                { label: "High (\u2265 0.06 kWh)", value: summary.high }
+            ];
+
+            const width = 420, height = 420, radius = Math.min(width, height) / 2;
+
+            const svg = pieChartDiv.append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .style("filter", "drop-shadow(2px 2px 4px rgba(0,0,0,0.4))")
+                .append("g")
+                .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+            const pie = d3.pie().value(d => d.value);
+            const arc = d3.arc().innerRadius(0).outerRadius(radius);
+            const color = d3.scaleOrdinal().domain(pieData.map(d => d.label)).range(["#4F81BD", "#C0504D", "#9BBB59"]);
+
+            svg.selectAll("path")
+                .data(pie(pieData))
+                .join("path")
+                .attr("d", arc)
+                .attr("fill", d => color(d.data.label))
+                .attr("stroke", "#333")
+                .style("stroke-width", "1px");
+
+            svg.selectAll("text")
+                .data(pie(pieData))
+                .join("text")
+                .text(d => `${((d.data.value / d3.sum(pieData, d => d.value)) * 100).toFixed(1)}%`)
+                .attr("transform", d => `translate(${arc.centroid(d)})`)
+                .style("text-anchor", "middle")
+                .style("font-size", "12px")
+                .style("fill", "#000");
+
+            const legend = pieChartDiv.append("div")
+                .style("display", "flex")
+                .style("justify-content", "center")
+                .style("gap", "20px")
+                .style("font-size", "12px")
+                .style("margin-top", "30px");
+
+            pieData.forEach(d => {
+                const item = legend.append("div").style("display", "flex").style("align-items", "center");
+                item.append("div")
+                  .style("width", "14px")
+                  .style("height", "14px")
+                  .style("background-color", color(d.label))
+                  .style("margin-right", "6px");
+                item.append("span").text(d.label);
+            });
+        }
+        
+    </script>
+</body>
+
+</html>

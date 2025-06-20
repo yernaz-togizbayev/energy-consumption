@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Energy Dashboard</title>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body 
+      {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f2f2f2;
+      }
+    #controls 
+      {
+      margin: 20px;
+      }
+    .chart-container 
+      {
+      background-color: #f2f2f2;
+      margin-bottom: 40px;
+      }
+    .tooltip 
+      {
+      position: absolute;
+      padding: 5px 10px;
+      background: #333;
+      color: #fff;
+      font-size: 12px;
+      border-radius: 3px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Energy Usage</h2>
+
+<div id="controls">
+  <label>Upload All XML Files:</label>
+  <input type="file" id="multi-file-input" multiple accept=".xml" /><br/><br/>
+
+  <label>Select Timezone:</label>
+   <select id="timezone">
+     <option value="">-- Select after upload --</option>
+    <option value="WET">Portugal (UTC+0)</option>
+    <option value="CET">Germany (UTC+1)</option>
+    <option value="EET">Estonia (UTC+2)</option>
+  </select>
+</div>
+
+<div id="graph1" class="chart-container"></div>
+    <div class="tooltip" id="tooltip"></div>
+
+<script type="module">
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+const margin = { 
+              top: 30, right: 30, bottom: 50, left: 60
+               },
+               width = 900 - margin.left - margin.right,
+               height = 450 - margin.top - margin.bottom;
+
+let dataByZone = { WET: [], CET: [], EET: [] };
+let x = d3.scaleTime().range([0, width]);
+let y = d3.scaleLinear().range([height, 0]);
+let xAxis, yAxis, linePath, circles;
+
+const tooltip = d3.select("#tooltip");
+
+const outerSvg = d3.select("#graph1")
+  .append("svg")
+  .attr("id", "mainChart")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom);
+
+const svg = outerSvg.append("g")
+  .attr("transform", `translate(${margin.left},${margin.top})`);
+
+svg.append("defs").append("clipPath")
+  .attr("id", "clip")
+  .append("rect")
+  .attr("width", width)
+  .attr("height", height);
+
+const zoomGroup = svg.append("g").attr("clip-path", "url(#clip)");
+
+outerSvg.call(d3.zoom()
+  .scaleExtent([1, 10])
+  .translateExtent([[0, 0], [width + margin.left, height + margin.top]])
+  .on("zoom", zoomed));
+
+function parseXML(xml) {
+  const ns = "urn:entsoe.eu:wgedi:MyEnergyData:10:1";
+  const periods = Array.from(xml.getElementsByTagNameNS(ns, "Period"));
+  return periods.map(period => {
+    const start = period.getElementsByTagNameNS(ns, "start")[0].textContent;
+    const value = parseFloat(period.getElementsByTagNameNS(ns, "out_Quantity.quantity")[0].textContent);
+    return { time: new Date(start), value };
+  });
+}
+
+function drawChart(data, timeZoneLabel) 
+  {
+  zoomGroup.selectAll("*").remove();
+  svg.selectAll(".x-axis, .y-axis").remove();
+
+  x.domain(d3.extent(data, d => d.time));
+  y.domain([0, d3.max(data, d => d.value)]).nice();
+
+  xAxis = svg.append("g")
+  .attr("class", "x-axis")
+  .attr("transform", `translate(0,${height})`)
+  .call(d3.axisBottom(x));
+
+  yAxis = svg.append("g")
+  .attr("class", "y-axis")
+  .call(d3.axisLeft(y));
+
+    //label time
+  svg.append("text")
+    .attr("class", "axis-label")
+    .attr("text-anchor", "middle")
+    .attr("x", width / 2)
+    .attr("y", height + margin.bottom - 5)
+    .text("Hour of Day");
+
+  // label for average energy
+  svg.append("text")
+    .attr("class", "axis-label")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -margin.left + 15)
+    .text("Average Energy (kWh)");
+
+  const line = d3.line()
+    .x(d => x(d.time))
+    .y(d => y(d.value));
+
+  linePath = zoomGroup.append("path")
+    .datum(data)
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5)
+    .attr("d", line);
+
+  circles = zoomGroup.selectAll("circle")
+    .data(data)
+    .join("circle")
+    .attr("cx", d => x(d.time))
+    .attr("cy", d => y(d.value))
+    .attr("r", 3)
+    .attr("fill", "red")
+    .on("mouseover", (event, d) => {
+      tooltip.style("opacity", 1)
+        .html(`${d.time.toLocaleString("en-GB", { timeZone: timeZoneLabel })}<br>${d.value.toFixed(4)} kWh`)
+        .style("left", `${event.pageX + 10}px`)
+        .style("top", `${event.pageY - 28}px`);
+    })
+    .on("mouseout", () => {
+      tooltip.style("opacity", 0);
+    });
+}
+
+function zoomed(event) {
+  const transform = event.transform;
+  const zx = transform.rescaleX(x); 
+  svg.select(".x-axis").call(d3.axisBottom(zx));
+
+ 
+  linePath.attr("d", d3.line()
+    .x(d => zx(d.time))
+    .y(d => y(d.value))
+  );
+
+  // Update  circles
+  circles.attr("cx", d => zx(d.time));
+}
+
+const timeZoneMap = { WET: "Europe/Lisbon", CET: "Europe/Berlin", EET: "Europe/Tallinn" };
+
+document.getElementById("multi-file-input").addEventListener("change", async (e) => {
+  const files = e.target.files;
+  for (const file of files) {
+    const name = file.name.toLowerCase();
+    const text = await file.text();
+    const xml = new DOMParser().parseFromString(text, "application/xml");
+    const data = parseXML(xml);
+    if (name.includes("wet")) dataByZone.WET = data;
+    else if (name.includes("cet")) dataByZone.CET = data;
+    else if (name.includes("eet")) dataByZone.EET = data;
+  }
+
+  const zones = ["WET", "CET", "EET"];
+  const defaultZone = zones.find(z => dataByZone[z] && dataByZone[z].length > 0);
+  if (defaultZone) {
+    document.getElementById("timezone").value = defaultZone;
+    drawChart(dataByZone[defaultZone], timeZoneMap[defaultZone]);
+  }
+}
+);
+
+document.getElementById("timezone").addEventListener("change", () => {
+  const zone = document.getElementById("timezone").value;
+  if (dataByZone[zone].length > 0) {
+    drawChart(dataByZone[zone], timeZoneMap[zone]);
+  }
+}
+);
+</script>
+</body>
+</html>

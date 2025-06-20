@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>Energy Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charset="UTF-8">
+
+        <!-- This aligns the title and the chart in the center. -->
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: baseline;
+                align-items: center;
+                background-color: #f2f2f2;
+                min-height: 95vh;
+            }
+
+            #graph_simple {
+                background-color: #f2f2f2;
+            }
+            input{
+                padding-bottom: 5px;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <label for="energyData">Choose an xml file</label>
+        <input type="file" id="energyData" name="energyData" accept=".xml" multiple>
+            
+        <label for="timeZone">Pick Time-Zone for X-Axis:</label>
+        <select name="timeZone" id="timeZone">
+            <option value="utc+0">UTC+0</option>
+            <option value="utc+1">UTC+1</option>
+            <option value="utc+2">UTC+2</option>
+        </select> 
+
+        <h2>EnergyData</h2>
+        <div id="graph_simple"></div>
+
+        <script type="module">
+            import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+            //load file when change in input
+            const input = document.querySelector('input');
+            input.addEventListener("change", handleFile);
+
+            const select = document.querySelector('select');
+            select.addEventListener("change", handleFile);
+
+            function handleFile(){
+
+                const selectedFiles = document.getElementById("energyData").files;
+                if(selectedFiles.length < 1){
+                    return;
+                }
+                let xmlStrings = [];
+
+                //loop through each file and copy the xmlString to an array
+                for(let i=0; i < selectedFiles.length; i++){
+                    const reader = new FileReader();
+
+                    reader.onload = function (event) {
+                        let obj = {name: selectedFiles[i].name, string: event.target.result}
+                        xmlStrings.push(obj);
+                        //on the final file we start to draw the graph
+                        if(xmlStrings.length == selectedFiles.length){
+                            makeGraph(xmlStrings);
+                        }
+                    }
+
+                    reader.readAsText(selectedFiles[i]);
+                }
+            }
+
+            function makeGraph(xmlStrings){
+                let dataSets = [];
+                let names = [];
+                for(let i=0; i < xmlStrings.length; i++){
+                    let parser = new DOMParser();
+                    let xmlDoc = parser.parseFromString(xmlStrings[i].string, "text/xml");
+
+                    let starts = xmlDoc.getElementsByTagName("start");
+                    let quantities = xmlDoc.getElementsByTagName("out_Quantity.quantity");
+
+                    let quantityValues = getFloatValues(quantities);
+                    let startDates = getStartDates(starts);
+                    let data = combineValuesAndDates(quantityValues, startDates);
+                    
+                    names.push(xmlStrings[i].name);
+                    dataSets.push(data);
+                }
+                drawLineChart(dataSets, names);
+            }
+            
+            function getFloatValues(quantities){
+                let values = [];
+                const array = Array.from(quantities);
+                array.forEach(addToValues);
+
+                function addToValues(floatString, index, array){
+                    values.push(parseFloat(floatString.textContent));
+                }
+                return values;
+            }
+
+            function getStartDates(starts){
+                let dates = [];
+                const array = Array.from(starts);
+                array.forEach(addToDates);
+
+                function addToDates(dateString, index, array){
+                    dates.push(new Date(dateString.textContent));
+                }
+                return dates;
+            }
+
+            function combineValuesAndDates(values, dates){
+                let data = [];
+                for(let i=0; i < values.length; i++){
+                    let entry = {date: dates[i], value: values[i]};
+                    data.push(entry);
+                }
+                return data;
+            }
+
+            function indexWithMostEntries(dataSets){
+                let index = 0;
+                let max = 0;
+                for(let j=0; j<dataSets.length; j++){
+                    if(dataSets[j].length > max){
+                        index = j;
+                        max = dataSets[j].length;
+                    }
+                }
+                return index;
+            }
+
+            function drawLineChart(dataSets, names){
+                const timeZone = document.getElementById("timeZone").value;
+                const biggestArray = dataSets[indexWithMostEntries(dataSets)];
+                const colors = ["steelblue", "forestgreen", "orangered", "darkmagenta", "darkblue"]
+
+                const width = 700;
+                const height = 400;
+                const margin = 50;
+
+                //default format is utc+0
+                let timeZoneFormater = d3.utcFormat("%Y/%m/%d  %H:%M%Z")
+                if(timeZone === "utc+1"){
+                    timeZoneFormater = formatDateToUTCplus1;
+                }
+                if(timeZone === "utc+2"){
+                    timeZoneFormater = formatDateToUTCplus2;
+                }
+
+                // Declare the x (horizontal position) scale.
+                const x = d3.scaleUtc()
+                        .domain(d3.extent(biggestArray, function(d){return d.date;}))
+                        .range([margin, width - margin]);
+
+                // Declare the y (vertical position) scale.
+                const y = d3.scaleLinear()
+                        .domain([0, d3.max(biggestArray, d => d.value)])
+                        .range([height-margin, margin]);
+
+                
+                // Create the SVG container make it a little bigger to create space for the labels
+                const svg = d3.create("svg")
+                    .attr("width", width+300)
+                    .attr("height", height + 80);
+                
+
+                // Add the x-axis.
+                svg.append("g")
+                    .attr("transform", `translate(0,${height - margin})`)
+                    .call(d3.axisBottom(x).ticks(d3.utcHour.every(1)).tickFormat(timeZoneFormater))
+                    .selectAll("text")  
+                    .style("text-anchor", "end")
+                    .attr("transform", "rotate(-60)");
+                    
+                //Add the label for the x-axis
+                svg.append("g")
+                        .call(g => g.append("text")
+                        .attr("transform", `translate(0,${height - margin})`)
+                        .attr("x", width- margin/2)
+                        .attr("y", 0)
+                        .attr("fill", "currentColor")
+                        .attr("text-anchor", "middle")
+                        .text("Time"));
+
+                // Add the y-axis.
+                svg.append("g")
+                    .attr("transform", `translate(${margin},0)`)
+                    .call(d3.axisLeft(y))
+                    .call(g => g.append("text")
+                        .attr("x", -(height / 2))
+                        .attr("y", -35)
+                        .attr("fill", "currentColor")
+                        .attr("text-anchor", "middle")
+                        .attr('transform', 'rotate(270)')
+                        .text("outQuantity [kWh]"));
+
+                // Add the data points: as a line
+                const line = d3.line()
+                        .x(d => x(d.date))
+                        .y(d => y(d.value));
+
+                
+                for(let i=0; i < dataSets.length; i++){
+                    let color = i > colors.length-1 ? colors[0] : colors[i];
+                    svg.append("path")
+                        .attr("fill", "none")
+                        .attr("stroke", color)
+                        .attr("stroke-width", 1.5)
+                        .attr("d", line(dataSets[i]));
+
+                    //create a legend for the names
+                    svg.append("circle").attr("cx",width + 5).attr("cy",margin +i*30).attr("r", 6).style("fill", color);
+                    svg.append("text").attr("x", width + 15).attr("y", margin +i*30).text(names[i]).style("font-size", "15px");
+                }
+
+                document.getElementById('graph_simple')
+                    .replaceChildren(svg.node());
+            }
+
+            const formatDateToUTCplus1 = d => {
+            // Convert to UTC+1 by adding 1 hour
+            const utc1 = new Date(d.getTime() + 60 * 60 * 1000);
+
+            // Format manually as YYYY/MM/DD HH:MM+0200
+            const year = utc1.getUTCFullYear();
+            const month = String(utc1.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(utc1.getUTCDate()).padStart(2, '0');
+            const hours = String(utc1.getUTCHours()).padStart(2, '0');
+            const minutes = String(utc1.getUTCMinutes()).padStart(2, '0');
+
+            return `${year}/${month}/${day}  ${hours}:${minutes}+0100`;
+            };
+            
+            const formatDateToUTCplus2 = d => {
+            // Convert to GMT+2 by adding 2 hours
+            const utc2= new Date(d.getTime() + 2 * 60 * 60 * 1000);
+
+            // Format manually as YYYY/MM/DD HH:MM+0200
+            const year = utc2.getUTCFullYear();
+            const month = String(utc2.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(utc2.getUTCDate()).padStart(2, '0');
+            const hours = String(utc2.getUTCHours()).padStart(2, '0');
+            const minutes = String(utc2.getUTCMinutes()).padStart(2, '0');
+
+            return `${year}/${month}/${day}  ${hours}:${minutes}+0200`;
+            };
+        </script>
+    </body>
+
+</html>
