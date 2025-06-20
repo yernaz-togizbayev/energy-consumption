@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<EnergyReport>
+    <DocumentIdentification>EE0022000006150671YK1P</DocumentIdentification>
+    <SenderIdentification>EE0011</SenderIdentification>
+    <ReceiverIdentification>EE0022</ReceiverIdentification>
+    <DocumentDateTime>2022-11-12T00:00:00+01:00</DocumentDateTime>
+    <AccountTimeSeries>
+        <AccountingPoint>EIC-0001</AccountingPoint>
+        <Period>
+            <TimeInterval>
+                <start>2022-11-09T00:00:00+01:00</start>
+                <end>2022-11-10T00:00:00+01:00</end>
+            </TimeInterval>
+            <Resolution>QH</Resolution>
+            <AccountInterval>
+                <Pos>1</Pos>
+                <MeasurementUnit>
+                    <OutQty>0.04
+                    </OutQty>
+                    <InQty></InQty>
+                </MeasurementUnit>
+            </AccountInterval>
+        </Period>
+    </AccountTimeSeries>
+</EnergyReport>
