@@ -1,0 +1,13 @@
+<?xml version='1.0'?>
+<consumos>
+    <consumos>
+        <CUPS>ES0022000006150671YK1P</CUPS>
+        <Fecha>2021/09/06</Fecha>
+        <Consumo_kWh>11,06</Consumo_kWh>
+    </consumos>
+    <consumos>
+        <CUPS>ES0022000006150671YK1P</CUPS>
+        <Fecha>2021/09/07</Fecha>
+        <Consumo_kWh>10,74</Consumo_kWh>
+    </consumos>
+</consumos>

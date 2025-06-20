@@ -1,0 +1,170 @@
+[
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "01:00",
+        "Consumo_kWh": "0,597",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "02:00",
+        "Consumo_kWh": "0,664",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "03:00",
+        "Consumo_kWh": "0,096",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "04:00",
+        "Consumo_kWh": "0,085",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "05:00",
+        "Consumo_kWh": "0,08",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "06:00",
+        "Consumo_kWh": "0,092",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "07:00",
+        "Consumo_kWh": "0,106",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "08:00",
+        "Consumo_kWh": "0,696",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "09:00",
+        "Consumo_kWh": "0,559",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "10:00",
+        "Consumo_kWh": "0,51",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "11:00",
+        "Consumo_kWh": "0,231",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "12:00",
+        "Consumo_kWh": "0,178",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "13:00",
+        "Consumo_kWh": "0,166",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "14:00",
+        "Consumo_kWh": "1,089",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "15:00",
+        "Consumo_kWh": "0,463",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "16:00",
+        "Consumo_kWh": "1,292",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "17:00",
+        "Consumo_kWh": "0,856",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "18:00",
+        "Consumo_kWh": "1,202",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "19:00",
+        "Consumo_kWh": "0,11",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "20:00",
+        "Consumo_kWh": "0,207",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "21:00",
+        "Consumo_kWh": "0,474",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "22:00",
+        "Consumo_kWh": "0,309",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "23:00",
+        "Consumo_kWh": "0,352",
+        "metodo_obtencion": "Real"
+    },
+    {
+        "CUPS": "ES0022000006150671YK1P",
+        "Fecha": "2021/09/07",
+        "Hora": "24:00",
+        "Consumo_kWh": "0,326",
+        "metodo_obtencion": "Real"
+    }
+]
