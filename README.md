@@ -1,53 +1,70 @@
-Step 1.
-We couldn't aquire suitable energy-data from our own smart-meters, so we were provided a data-set by the course-organizers
+# ⚡ Foundations of Networked Systems Project – Energy Data Transformation & Visualization
 
-Step 2:
-We used the provided template as basis for our Transformer.
-Importing the project should work the same way as importing the original template.
-Our Transformer is the `EETransformer.java` in the eddie.energy.transformer package.
+This project explores the challenges of accessing and processing **real-world smart meter energy data** across different countries, and transforming it into **CIM-compliant XML format**. It further visualizes this data using interactive dashboards, simulating consumption patterns across **three European time zones**.
+---
 
-The energy data we use was provided to us since our data wasn't suitable.
-It can be found in the EE folder under the filename `EE_Test-Data_QH.xml`.
+## 🌍 Project Overview
 
-To generate the output file run the test case `testEETransformer()`.
-The test case can be found in the energy.eddie.transformer package in `TestTransformer.java`.
-This will generate `EE-Transformer-Output.xml`, which represents our transformed data in the `MyEnergyDataMarketDocument` format.
+The project is structured into **three core components**:
 
-In order for the XML creation to work we had to add an @XmlRootElement annotation to MyEnergyDataMarketDocument.java
-otherwise the creation would fail even for the provided Test-Transformers
+1. **Energy Data Access**
+   - Attempted real-world smart meter access from Austria, Afghanistan, and Iran.
+   - Due to limited data export options in AFG/IRN, the group used **Estonian sample data** (XML) from the course.
+   - Comparative summary included in the final report.
 
-The generated XML is automatically validated against the `myenergydata` XSD as part of the test.
-The validation logic can be found in the eddie.energy.validation package in `XMLValidation.java`.
+2. **Data Transformation**
+   - Developed a `EETransformer` in Java to convert Estonian XML to **CIM (Common Information Model)** format.
+   - Implemented **time zone simulation** (WET, CET, EET).
+   - Validation performed with XML Schema Definition (XSD).
+   - Java test classes ensure compliance and correctness of output:
+     - `TestTransformer.java`
+     - `XMLValidation.java`
 
-Step 3 TaskB:
+3. **Interactive Dashboards**
+   - Built with **HTML5, JavaScript, and D3.js**
+   - Upload and visualize XML data across time zones.
+   - 4 Dashboards, one per contributor:
+     - Line chart, bar chart, pie chart, and dynamic selection
+   - Features include time zone conversion, file upload, grouped comparisons, and interactivity.
 
-Our EnergyData is from Estonia which is in timezone EET.
-The function getMappedMarketDocumentFromTimezone(OriginTimeZone) takes an Enum as input and pretends the original timezone of the input data is either WET, CET, or EET
-The generated Output's date Strings have the same format regardless of the specified input and show the time in UTC.
-To make the data easier to use we limited the data to 24 hours in a single day, or in other words we cut off the last entries for CET and WET because 
+---
 
-To generate the output for all 3 timezones run the test case `testEETransformer()`.
-The test case can be found in the energy.eddie.transformer package in `TestTransformer.java`.
-This will generate `EE-Transformer-Output-CET.xml`, `EE-Transformer-Output-EET.xml`, and `EE-Transformer-Output-WET.xml`, which represents our transformed data in the `MyEnergyDataMarketDocument` format.
+## 🛠 Technologies Used
 
+- **Java** (DOM Parser, file validation, UUID generation)
+- **D3.js** for visual analytics
+- **HTML5**, **CSS**, **JavaScript**
+- **XML / XSD** schema for CIM compliance
 
-Dashboard:
+---
 
-Go to the dashboard folder and open the index.html file with any browser.
-Here you can choose one of the 4 dashboards.
+## 🧪 Features Implemented
 
-The data is intended to be used are the three XML-files: `EE-Transformer-Output-WET.xml`, `EE-Transformer-Output-CET.xml`, and `EE-Transformer-Output-EET.xml`
+- ✅ Smart meter data access evaluation (AUT, AFG, IRN)
+- ✅ Transformation of Estonian XML to CIM-compliant format
+- ✅ Output support for **3 time zones** (UTC+0, +1, +2)
+- ✅ XML validation via Java
+- ✅ 4 interactive dashboards:
+  - Line chart
+  - Bar and Pie charts
+  - Zoomable chart
+  - Color-coded time comparison chart
 
-`Simple Line Dashboard` works with 1 or more files.
+---
 
-`Time Zone Comparison` requires at least 2 files.
+## 📁 Project Structure
 
-`Zoomable Line View` requires all 3 files to be uploaded.
+| File / Folder | Description |
+|---------------|-------------|
+| `/transformer/` | Java code for XML parsing and CIM transformation |
+| `/validation/` | Java test and validation utilities |
+| `/dashboards/` | HTML + JS dashboards (one per member) |
+| `EE-Transformer-Output-{WET,CET,EET}.xml` | Example output for each time zone |
+| `FNS_Project_Group27.pdf` | Final report including documentation, comparisons, and visuals |
 
-`Bar and Pie Summary` requires at least 2 files.
+---
 
+## 📄 License
 
+This project was developed as part of the **Foundations of Networked Systems** course at the University of Vienna. Shared for academic and educational purposes only.
 
-### Acknowledgements
-The structure of the XML validation logic in `XMLValidation.java` was inspired by:
-[How to Validate XML against XSD in Java – DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-validate-xml-against-xsd-in-java)
